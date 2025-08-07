@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://api.openai.com https://lazyjobseeker.com">
+    <title>Angel - AI Meeting Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --gradient-start: #6366f1;
+            --gradient-end: #8b5cf6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --transition: all 0.2s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+        
+        .container {
+            width: 100vw;
+            max-width: none;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Sign In Screen Styles */
+        .sign-in-screen {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: var(--radius-lg);
+            color: white;
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .sign-in-btn {
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sign-in-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+
+
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: var(--radius-lg);
+            color: white;
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .title-wrapper {
+            margin-bottom: 1.5rem;
+        }
+        
+        .product-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(1.25rem);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            transform: translateY(1.25rem);
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+        
+        .product-description {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 20rem;
+            margin: 0 auto;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(1.25rem);
+            animation: fadeInUp 0.8s ease 0.4s forwards;
+            margin-top: 0.75rem;
+        }
+        
+        .start-btn {
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .product-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+        
+        .product-footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .product-footer a:hover {
+            color: var(--primary-light);
+        }
+        
+        .heart-icon {
+            color: #ff4d6d;
+            animation: heartbeat 1.5s infinite;
+            margin: 0 3px;
+        }
+        
+        /* Chat App Content Styles */
+        .content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .header-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 2.5rem;
+            height: 1.5rem;
+        }
+        
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-label {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: .4s;
+            border-radius: 1.5rem;
+        }
+        
+        .toggle-label:before {
+            position: absolute;
+            content: "";
+            height: 1.125rem;
+            width: 1.125rem;
+            left: 0.25rem;
+            bottom: 0.2rem;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-input:checked + .toggle-label {
+            background-color: var(--success);
+        }
+        
+        .toggle-input:checked + .toggle-label:before {
+            transform: translateX(1rem);
+        }
+        
+        .toggle-text {
+            font-size: 0.625rem;
+            margin-left: 0.25rem;
+            color: white;
+        }
+        
+        /* Chat messages area */
+        .chat-messages {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            background-color: rgba(246, 248, 252, 0.5);
+        }
+        
+        .message {
+            display: flex;
+            margin-bottom: 0.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .message-user {
+            justify-content: flex-end;
+        }
+        
+        .message-ai {
+            justify-content: flex-start;
+        }
+        
+        .message-content {
+            padding: 0.6rem 0.8rem;
+            border-radius: var(--radius);
+            max-width: 80%;
+            word-wrap: break-word;
+            box-shadow: var(--shadow-sm);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .message-user .message-content {
+            background-color: var(--primary);
+            color: white;
+            border-radius: var(--radius) var(--radius-sm) var(--radius-sm) var(--radius);
+        }
+        
+        .message-ai .message-content {
+            background-color: white;
+            color: var(--text);
+            border-radius: var(--radius-sm) var(--radius) var(--radius) var(--radius-sm);
+            border-left: 4px solid var(--success);
+        }
+        
+        /* Update live transcript styling for new position */
+        .live-transcript {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0.4rem 0.6rem;
+            margin: 0;
+            border-top: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            font-style: italic;
+            color: var(--text-light);
+            box-shadow: var(--shadow-sm);
+            max-height: 80px;
+            overflow-y: auto;
+            opacity: 0.9;
+            font-size: 0.8rem;
+            position: sticky;
+            bottom: 3.5rem;
+            z-index: 9;
+        }
+        
+        .live-transcript.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        #liveIndicator {
+            background-color: #ef4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.625rem;
+            margin-right: 0.5rem;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Controls area */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: white;
+            border-top: 1px solid var(--border);
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            position: relative;
+        }
+        .gear-corner {
+            position: absolute;
+            left: 0.7rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            justify-content: center;
+        }
+        
+        .mic-button {
+            height: 3rem;
+            width: 3rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+        
+        .mic-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .mic-button.recording {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            animation: pulse-button 2s infinite;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        }
+        
+        .mic-button i {
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .reset-button {
+            height: 2rem;
+            width: 2rem;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .reset-button:hover {
+            background-color: #d1d5db;
+        }
+        
+        .reset-button i {
+            font-size: 0.85rem;
+            color: #4b5563;
+        }
+        
+        .status-text {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+        
+        /* Screen Sharing Indicator */
+        .screen-sharing-active {
+            position: fixed;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--danger);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.625rem;
+            z-index: 9999;
+            display: none;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Screen Sharing Mode Styles */
+        .screen-sharing-mode .container {
+            border: 2px solid var(--danger) !important;
+            position: relative;
+            overflow: visible !important;
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            70% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+        
+        @keyframes pulse-button {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(1.25rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Loading Animation */
+        .loading-dots {
+            display: inline-flex;
+            align-items: center;
+            height: 20px;
+        }
+        .loading-dot {
+            background-color: var(--primary);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: loading-dots 1.4s infinite ease-in-out both;
+        }
+        .loading-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        @keyframes loading-dots {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Processing spinner */
+        .processing-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--primary-light);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-right: 0.375rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Compact toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Professional Hide Toggle */
+        .toggle-switch.compact {
+            width: 2.2rem;
+            height: 1.2rem;
+            margin-left: 0.5rem;
+            border: none;
+            background: none;
+            position: relative;
+        }
+        .toggle-switch.compact .toggle-label {
+            background: #e5e7eb;
+            border-radius: 1.2rem;
+            box-shadow: 0 2px 6px rgba(99,102,241,0.08);
+            border: 1.5px solid #c7d2fe;
+            transition: background 0.3s, border 0.3s;
+            height: 1.2rem;
+            width: 2.2rem;
+        }
+        .toggle-switch.compact .toggle-input:checked + .toggle-label {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border: 1.5px solid var(--primary);
+        }
+        .toggle-switch.compact .toggle-label:before {
+            height: 1rem;
+            width: 1rem;
+            left: 0.1rem;
+            bottom: 0.1rem;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
+            border: 1px solid #c7d2fe;
+        }
+        .toggle-switch.compact .toggle-input:checked + .toggle-label:before {
+            transform: translateX(1rem);
+            background: #fff;
+            border: 1px solid var(--primary);
+        }
+        .toggle-text {
+            font-size: 1rem;
+            margin-left: 0.7rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-shadow: none;
+            vertical-align: middle;
+        }
+
+        /* New: Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: var(--card);
+            padding: 0.75rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            font-size: 1.05rem;
+        }
+
+        .modal-content p {
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 150px;
+        }
+
+        .modal-content .start-btn, .modal-content .reset-button {
+            margin-top: 0;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .modal-content .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+        }
+
+        .modal-content .reset-button {
+            background-color: #f1f5f9;
+            color: var(--text-light);
+        }
+
+        .modal-content .reset-button:hover {
+            background-color: #e2e8f0;
+        }
+
+        /* Modern Switch for Hide Toggle */
+        .modern-switch {
+            position: relative;
+            width: 2.4rem;
+            height: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modern-switch input[type="checkbox"] {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin: 0;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .modern-switch .slider {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #e5e7eb;
+            border-radius: 1.3rem;
+            transition: background 0.3s;
+            box-shadow: 0 2px 6px rgba(99,102,241,0.08);
+        }
+        .modern-switch input[type="checkbox"]:checked + .slider {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+        .modern-switch .knob {
+            position: absolute;
+            top: 0.13rem;
+            left: 0.13rem;
+            width: 1.04rem;
+            height: 1.04rem;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.10);
+            border: 1px solid #c7d2fe;
+            transition: left 0.3s;
+        }
+        .modern-switch input[type="checkbox"]:checked + .slider .knob {
+            left: 1.23rem;
+            border: 1px solid var(--primary);
+        }
+        .hide-label {
+            display: block;
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--primary);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 500;
+            margin-top: 0.12rem;
+            letter-spacing: 0.01em;
+        }
+        .reset-label {
+            display: block;
+            text-align: center;
+            font-size: 0.72rem;
+            color: #64748b;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 500;
+            margin-top: 0.12rem;
+            letter-spacing: 0.01em;
+        }
+        .gear-icon {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            vertical-align: middle;
+        }
+        .gear-icon:hover {
+            color: var(--primary);
+        }
+        .apikey-modal {
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .apikey-modal-content {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+            min-width: 320px;
+            max-width: 90vw;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .apikey-modal-content h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .apikey-modal-content label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+        }
+        .apikey-modal-content input[type="password"] {
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        .apikey-modal-content .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        .apikey-modal-content button {
+            padding: 0.4rem 1.1rem;
+            border-radius: var(--radius);
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .apikey-modal-content button.cancel {
+            background: #e5e7eb;
+            color: #64748b;
+        }
+        .apikey-modal-content button.cancel:hover {
+            background: #cbd5e1;
+        }
+        .apikey-modal-content button.save:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Remove Sign In Screen -->
+        
+        <!-- Welcome Screen (initially hidden) -->
+        <div id="welcomeScreen" class="welcome-screen hidden">
+            <div class="title-wrapper">
+                <h2 class="product-name">Angel</h2>
+                <h1 class="subtitle">AI Meeting Assistant</h1>
+                <p class="product-description">
+                    Silent, Smart, and Always On top
+                </p>
+            </div>
+            <button id="startApp" class="start-btn hidden">
+                <i class="fas fa-play-circle"></i> Start Assistant
+            </button>
+            <!-- New: Provide Profile Button on Welcome Screen -->
+            <button id="provideProfileButtonWelcome" class="start-btn" title="Provide your resume for interview mode" style="margin-top: 1rem;">
+                <i class="fas fa-user"></i> Provide Profile
+            </button>
+
+            <div class="product-footer">
+                <span>A product from </span>
+                <a href="https://lazyjobseeker.com" target="_blank">LazyJobSeeker.com</a>
+                <span style="margin: 0 5px;">•</span>
+                <span>Made with </span>
+                <i class="fas fa-heart heart-icon"></i>
+            </div>
+        </div>
+
+        <!-- Main App Content (initially hidden) -->
+        <div id="appContent" class="content hidden">
+            <!-- Screen Sharing Indicator -->
+            <div id="screenSharingIndicator" class="screen-sharing-active">
+                <i class="fas fa-desktop"></i> Hiding from Screen Capture...
+            </div>
+            
+            <!-- Chat Messages Area - no header -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome message -->
+                <div class="message message-ai">
+                    <div class="message-content">
+                        Hello! I'm your AI meeting assistant. Press the microphone button or spacebar to start recording.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Live transcript moved here, between chat messages and controls -->
+            <div id="liveTranscript" class="live-transcript">
+                <span id="liveIndicator" class="hidden">LIVE</span>
+                <span id="transcriptText">Waiting for speech...</span>
+            </div>
+            
+            <!-- Controls Area -->
+            <div class="controls">
+                <div class="gear-corner">
+                    <i class="fas fa-gear gear-icon" id="openAIGear"></i>
+                </div>
+                <div class="control-buttons" style="display: flex; align-items: center;">
+                    <button id="micButton" class="mic-button">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <button id="resetButton" class="reset-button">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="modern-switch">
+                            <input type="checkbox" id="screenSharingMode" class="toggle-input">
+                            <span class="slider"><span class="knob"></span></span>
+                        </div>
+                        <span class="hide-label">Hide</span>
+                    </div>
+                </div>
+                <div id="statusText" class="status-text">
+                    Use Spacebar for easy access.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Input Modal (shown immediately on app start) -->
+    <div id="profileInputModal" class="modal">
+        <div class="modal-content">
+            <h3>Provide Your Resume</h3>
+            <p>Paste your resume text below. This will help Angel answer questions during interviews based on your profile.</p>
+            <textarea id="resumeTextArea" placeholder="Paste your resume text here..." rows="15"></textarea>
+            <div class="button-group">
+                <button id="cancelProfileButton" class="reset-button">Cancel</button>
+                <button id="saveProfileButton" class="start-btn">Save Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OpenAI API Key Modal -->
+    <div id="apikeyModal" class="apikey-modal hidden">
+        <div class="apikey-modal-content">
+            <h3>Set OpenAI API Key</h3>
+            <label for="openaiKeyInput">Enter your OpenAI API key below. It will be used for your requests only and never shared.</label>
+            <input type="password" id="openaiKeyInput" placeholder="sk-..." autocomplete="off" />
+            <div class="button-group">
+                <button class="cancel" id="cancelApiKeyBtn">Cancel</button>
+                <button class="save" id="saveApiKeyBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        // Add error handling for IPC
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+        });
+
+        // Add unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+        
+        // Get all necessary DOM elements
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const appContent = document.getElementById('appContent');
+        const screenSharingToggle = document.getElementById('screenSharingMode');
+        const micButton = document.getElementById('micButton');
+        const resetButton = document.getElementById('resetButton');
+        const statusText = document.getElementById('statusText');
+        const chatMessages = document.getElementById('chatMessages');
+        const liveTranscript = document.getElementById('liveTranscript');
+        const transcriptText = document.getElementById('transcriptText');
+        const liveIndicator = document.getElementById('liveIndicator');
+        // Remove signInScreen and signInButton logic
+        // Remove checkAuth and sign-in button event handler
+        // Remove all plan-checking and auth-complete/auth-error IPC handlers
+        // After resume is provided, enable the assistant/chat UI
+        let userProfileProvided = false;
+        const profileInputModal = document.getElementById('profileInputModal');
+        const resumeTextArea = document.getElementById('resumeTextArea');
+        const saveProfileButton = document.getElementById('saveProfileButton');
+        const cancelProfileButton = document.getElementById('cancelProfileButton');
+        const provideProfileButtonWelcome = document.getElementById('provideProfileButtonWelcome');
+        const startAppButton = document.getElementById('startApp');
+        // On save profile, hide modal, show welcome screen, enable start button
+        saveProfileButton.addEventListener('click', () => {
+            const resumeText = resumeTextArea.value.trim();
+            if (resumeText) {
+                userProfileProvided = true;
+                profileInputModal.classList.add('hidden');
+                welcomeScreen.classList.remove('hidden');
+                startAppButton.classList.remove('hidden');
+                startAppButton.disabled = false;
+                provideProfileButtonWelcome.classList.add('hidden');
+                micButton.disabled = false;
+                micButton.style.opacity = '1';
+                micButton.style.cursor = 'pointer';
+            } else {
+                alert('Please paste your resume text.');
+            }
+        });
+        // On cancel, just keep modal open (or optionally close app)
+        cancelProfileButton.addEventListener('click', () => {
+            resumeTextArea.value = '';
+        });
+        // Provide Profile button on welcome screen reopens modal
+        provideProfileButtonWelcome.addEventListener('click', () => {
+            profileInputModal.classList.remove('hidden');
+            resumeTextArea.value = '';
+        });
+        // Start button shows app content
+        startAppButton.addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
+        });
+        
+        // Add console logs for debugging
+        console.log('Initializing application...');
+        
+        let isRecording = false;
+        let isProcessingToggle = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let messages = [];
+        // Remove userProfileProvided state
+        let statusHideTimer = null;
+
+        // Make sure appContent is hidden initially
+        appContent.classList.add('hidden');
+        
+        // Disable mic button by default until profile is provided
+        micButton.disabled = true;
+        micButton.style.opacity = '0.5';
+        micButton.style.cursor = 'not-allowed';
+        
+        // Function to show loading animation
+        function showLoadingAnimation() {
+            return `<div class="loading-dots">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+            </div>`;
+        }
+        
+        // Function to add a message to the chat
+        function addMessage(text, isUser = false) {
+            // Create message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'message-user' : 'message-ai'}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = text;
+            
+            messageDiv.appendChild(messageContent);
+            
+            // Add to chat
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Store in messages array
+            messages.push({ text, isUser });
+        }
+        
+        // Function to update live transcript (now only for status, not live text)
+        function updateLiveTranscript(text) {
+            if (text && text.trim()) {
+                transcriptText.textContent = text;
+                liveTranscript.classList.add('active');
+            } else {
+                liveTranscript.classList.remove('active');
+            }
+        }
+        
+        // Update status text
+        function updateStatus(text) {
+            statusText.textContent = text.replace('Press microphone button or spacebar to start recording', 'Use Spacebar for easy access.').replace('Press microphone or spacebar to start recording', 'Use Spacebar for easy access.').replace('Conversation reset. ', 'Conversation reset.').replace('Welcome! Profile loaded. Press microphone button or spacebar to start recording.', 'Welcome! Profile loaded. Use Spacebar for easy access.');
+            statusText.style.opacity = '1';
+            statusText.style.visibility = 'visible';
+            if (statusHideTimer) clearTimeout(statusHideTimer);
+            statusHideTimer = setTimeout(() => {
+                statusText.style.opacity = '0';
+                statusText.style.visibility = 'hidden';
+            }, 10000);
+        }
+        
+        // Start button click handler
+        startAppButton.addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
+        });
+
+        // Initialize audio recording
+        async function initializeRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 48000,
+                        channelCount: 1
+                    }
+                });
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus',
+                    audioBitsPerSecond: 128000
+                });
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                return true;
+            } catch (error) {
+                console.error('Error initializing recording:', error);
+                addMessage(`Error: ${error.message}`, false);
+                return false;
+            }
+        }
+
+        // Toggle recording function
+        async function toggleRecording() {
+            if (!userProfileProvided) {
+                updateStatus('Please provide your resume to start the assistant.');
+                return; 
+            }
+
+            try {
+                if (isProcessingToggle) return;
+                isProcessingToggle = true;
+                if (!mediaRecorder) {
+                    const initialized = await initializeRecording();
+                    if (!initialized) {
+                        isProcessingToggle = false;
+                        return;
+                    }
+                }
+
+                if (!isRecording) {
+                    audioChunks = [];
+                    console.log('Starting recording');
+                    micButton.classList.add('recording');
+                    micButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                    updateStatus('Listening... Click microphone or press spacebar to stop');
+                    updateLiveTranscript('Listening...'); // Show Listening... while recording
+                    liveIndicator.classList.remove('hidden');
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+                    mediaRecorder.onstop = async () => {
+                        // Show Pro upsell message instead of 'Transcribing...'
+                        transcriptText.innerHTML = 'For more speed and live transcription, try the <a href="https://lazyjobseeker.com/pricing" target="_blank" style="color:#6366f1;font-weight:bold;text-decoration:underline;">Pro</a> version of Angel.';
+                        liveTranscript.classList.add('active');
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const buffer = await blob.arrayBuffer();
+                        let binary = '';
+                        const bytes = new Uint8Array(buffer);
+                        for (let i = 0; i < bytes.byteLength; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        const base64Audio = btoa(binary);
+                        ipcRenderer.send('audio-data', base64Audio);
+                        audioChunks = [];
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                } else {
+                    console.log('Stopping recording');
+                    micButton.classList.remove('recording');
+                    micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                    updateStatus('Processing...');
+                    liveIndicator.classList.add('hidden');
+                    try {
+                        mediaRecorder.stop();
+                        const tracks = mediaRecorder.stream.getTracks();
+                        tracks.forEach(track => track.stop());
+                    } catch (error) {
+                        console.error('Error stopping MediaRecorder:', error);
+                    }
+                    mediaRecorder = null;
+                    isRecording = false;
+                }
+                setTimeout(() => {
+                    isProcessingToggle = false;
+                }, 300);
+            } catch (error) {
+                console.error('Error toggling recording:', error);
+                addMessage(`Error: ${error.message}`, false);
+                micButton.classList.remove('recording');
+                micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                updateStatus('Error recording. Please try again.');
+                isRecording = false;
+                isProcessingToggle = false;
+                mediaRecorder = null;
+            }
+        }
+        
+        // Reset conversation
+        function resetConversation() {
+            // Clear messages except the first welcome message
+            while (chatMessages.children.length > 1) {
+                chatMessages.removeChild(chatMessages.lastChild);
+            }
+            
+            // Hide transcript
+            liveTranscript.classList.remove('active');
+            
+            // Reset messages array except welcome message
+            messages = messages.slice(0, 1);
+            
+            // Reset status
+            updateStatus('Conversation reset..');
+            
+            // Tell main process to reset transcript
+            ipcRenderer.send('reset-transcript');
+        }
+        
+        // Mic button click handler
+        micButton.addEventListener('click', toggleRecording);
+        
+        // Reset button click handler
+        resetButton.addEventListener('click', resetConversation);
+        
+        // Add spacebar handler for toggling recording
+        document.addEventListener('keydown', (event) => {
+            // Check if key is spacebar and not in an input field
+            if (event.code === 'Space' && 
+                document.activeElement.tagName !== 'INPUT' && 
+                document.activeElement.tagName !== 'TEXTAREA') {
+                // Prevent default scrolling behavior
+                event.preventDefault();
+                // Toggle recording
+                toggleRecording();
+            }
+        });
+        
+        // Screen sharing mode toggle handler
+        screenSharingToggle.addEventListener('change', () => {
+            const isHideMode = screenSharingToggle.checked;
+            
+            // First update UI immediately to give user feedback
+            const indicator = document.getElementById('screenSharingIndicator');
+            
+            if (isHideMode) {
+                // Show screen sharing mode indicator
+                indicator.style.display = 'block';
+                console.log('Requested screen sharing hide mode');
+            } else {
+                // Hide indicators
+                indicator.style.display = 'none';
+                console.log('Requested normal mode');
+            }
+            
+            // Then tell main process to apply the actual exclusion
+            ipcRenderer.send('toggle-screen-sharing-mode', isHideMode);
+        });
+        
+        // New: Provide Profile button handlers (now for the new button)
+        // Remove provideProfileButton handlers
+        
+        // Remove saveProfileButton and cancelProfileButton handlers
+        
+        // Remove all sign-in/auth logic and related variables
+        // On app start, show the profile input modal
+        document.getElementById('profileInputModal').classList.remove('hidden');
+        // After resume is provided, enable the assistant/chat UI
+        // Only declare variables once
+        // let userProfileProvided = false; // Only declare once at the top
+        // (already declared above) const startAppButton = document.getElementById('startApp');
+        // On save profile, hide modal, show welcome screen, enable start button
+        saveProfileButton.addEventListener('click', () => {
+            const resumeText = resumeTextArea.value.trim();
+            if (resumeText) {
+                userProfileProvided = true;
+                profileInputModal.classList.add('hidden');
+                welcomeScreen.classList.remove('hidden');
+                startAppButton.classList.remove('hidden');
+                startAppButton.disabled = false;
+                provideProfileButtonWelcome.classList.add('hidden');
+                micButton.disabled = false;
+                micButton.style.opacity = '1';
+                micButton.style.cursor = 'pointer';
+            } else {
+                alert('Please paste your resume text.');
+            }
+        });
+        // On cancel, just keep modal open (or optionally close app)
+        cancelProfileButton.addEventListener('click', () => {
+            resumeTextArea.value = '';
+        });
+        // Provide Profile button on welcome screen reopens modal
+        provideProfileButtonWelcome.addEventListener('click', () => {
+            profileInputModal.classList.remove('hidden');
+            resumeTextArea.value = '';
+        });
+        // Start button shows app content
+        startAppButton.addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
+        });
+        
+        // IPC event handlers
+        
+        // Handle live transcript updates (now only after transcription is done)
+        ipcRenderer.on('transcript', (event, text) => {
+            updateLiveTranscript(''); // Clear transcript area
+            if (text && text.trim()) {
+                addMessage(text, true); // Show transcript as user message
+            }
+        });
+
+        // Handle recording started
+        ipcRenderer.on('recording-started', () => {
+            console.log('Recording started signal received');
+        });
+        
+        // Handle recording stopped
+        ipcRenderer.on('recording-stopped', () => {
+            console.log('Recording stopped signal received');
+            
+            // Update UI if needed
+            if (isRecording) {
+                isRecording = false;
+                micButton.classList.remove('recording');
+                micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        });
+        
+        // Handle answers
+        ipcRenderer.on('answer', (event, text) => {
+            // Always show the answer as an AI message
+            if (text && text.trim()) {
+                addMessage(text, false);
+            } else {
+                addMessage('No answer received. Please try again.', false);
+            }
+            // Update status
+            updateStatus('Use Spacebar for easy access.');
+        });
+        
+        // Handle answer status updates
+        ipcRenderer.on('answer-status', (event, message) => {
+            updateStatus(message);
+        });
+        
+        // Handle transcription errors
+        ipcRenderer.on('transcription-error', (event, errorMessage) => {
+            console.error('Transcription error:', errorMessage);
+            addMessage(`Error: ${errorMessage}`, false);
+            updateStatus('Error during transcription. Please try again.');
+        });
+        
+        // Initialize recording when the app starts
+        initializeRecording().then(success => {
+            if (!success) {
+                updateStatus('Failed to initialize microphone. Please check permissions.');
+            }
+        });
+
+        // Remove all sign-in/auth logic and related variables
+        // On app start, show the profile input modal
+        document.getElementById('profileInputModal').classList.remove('hidden');
+        // After resume is provided, enable the assistant/chat UI
+        // Only declare variables once
+        // let userProfileProvided = false; // Only declare once at the top
+        // (already declared above) const startAppButton = document.getElementById('startApp');
+        // On save profile, hide modal, show welcome screen, enable start button
+        saveProfileButton.addEventListener('click', () => {
+            const resumeText = resumeTextArea.value.trim();
+            if (resumeText) {
+                userProfileProvided = true;
+                profileInputModal.classList.add('hidden');
+                welcomeScreen.classList.remove('hidden');
+                startAppButton.classList.remove('hidden');
+                startAppButton.disabled = false;
+                provideProfileButtonWelcome.classList.add('hidden');
+                micButton.disabled = false;
+                micButton.style.opacity = '1';
+                micButton.style.cursor = 'pointer';
+            } else {
+                alert('Please paste your resume text.');
+            }
+        });
+        // On cancel, just keep modal open (or optionally close app)
+        cancelProfileButton.addEventListener('click', () => {
+            resumeTextArea.value = '';
+        });
+        // Provide Profile button on welcome screen reopens modal
+        provideProfileButtonWelcome.addEventListener('click', () => {
+            profileInputModal.classList.remove('hidden');
+            resumeTextArea.value = '';
+        });
+        // Start button shows app content
+        startAppButton.addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
+        });
+        
+        // On page load, ensure status is visible
+        statusText.style.opacity = '1';
+        statusText.style.visibility = 'visible';
+
+        // OpenAI API Key logic
+        let userOpenAIKey = null;
+        const openAIGear = document.getElementById('openAIGear');
+        const apikeyModal = document.getElementById('apikeyModal');
+        const openaiKeyInput = document.getElementById('openaiKeyInput');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const cancelApiKeyBtn = document.getElementById('cancelApiKeyBtn');
+
+        openAIGear.addEventListener('click', () => {
+            apikeyModal.classList.remove('hidden');
+            openaiKeyInput.value = userOpenAIKey || '';
+            openaiKeyInput.focus();
+        });
+        cancelApiKeyBtn.addEventListener('click', () => {
+            apikeyModal.classList.add('hidden');
+        });
+        saveApiKeyBtn.addEventListener('click', () => {
+            userOpenAIKey = openaiKeyInput.value.trim();
+            apikeyModal.classList.add('hidden');
+            // Send the key to the main process
+            ipcRenderer.send('set-openai-key', userOpenAIKey);
+        });
+        // Optional: close modal on outside click
+        apikeyModal.addEventListener('mousedown', (e) => {
+            if (e.target === apikeyModal) apikeyModal.classList.add('hidden');
+        });
+
+        // Add IPC handler to reply with the latest visible transcript when requested
+        ipcRenderer.on('request-latest-transcript', () => {
+            const transcript = transcriptText.textContent || '';
+            ipcRenderer.send('latest-transcript', transcript, userOpenAIKey || null);
+        });
+    </script>
+</body>
+</html>

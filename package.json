@@ -1,0 +1,67 @@
+{
+  "name": "angel-ai-assistant",
+  "version": "1.0.0",
+  "description": "AI-powered Meeting Assistant that provides real-time answers during meetings",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-builder",
+    "build-mac": "electron-builder --mac",
+    "build-win": "electron-builder --win --x64 && electron-builder --win --arm64",
+    "build-win-x64": "electron-builder --win --x64",
+    "build-win-arm64": "electron-builder --win --arm64",
+    "build-macarm": "electron-builder --mac --arm64",
+    "build-macintel": "electron-builder --mac --x64",
+    "build-all": "sh ./build-all.sh",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "author": "Lazy Job Seeker",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "openai": "^4.24.1",
+    "tmp": "^0.2.1"
+  },
+  "devDependencies": {
+    "@electron/notarize": "^3.0.1",
+    "electron": "^36.4.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.lazyjobseeker.angel",
+    "productName": "Angel AI Meeting Assistant",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icons/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "assets/icons/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "files": [
+      "**/*"
+    ],
+    "asarUnpack": [],
+    "afterSign": "scripts/notarize.js",
+    "publish": null
+  }
+}
